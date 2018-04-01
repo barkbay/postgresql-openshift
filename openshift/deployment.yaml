@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: DeploymentConfig
+metadata:
+  labels:
+    app: psql-dc
+  name: psql-dc
+spec:
+  replicas: 1
+  selector:
+    deploymentconfig: psql-dc
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: psql-dc
+        deploymentconfig: psql-dc
+    spec:
+      containers:
+      - image: 192.168.56.1:5000/d1g1tal/postgresql-centos7:10r1
+        imagePullPolicy: Always
+        name: psql
+        env:
+        - name: POSTGRESQL_USER
+          value: "user"
+        - name: POSTGRESQL_PASSWORD
+          value: "password"
+        - name: POSTGRESQL_DATABASE
+          value: "mydb"
+        ports:
+        - containerPort: 5432
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+      - image: 192.168.56.1:5000/d1g1tal/postgres_exporter:v0.4.5
+        imagePullPolicy: Always
+        name: exporter
+        env:
+        - name: POSTGRESQL_USER
+          value: "user"
+        - name: POSTGRESQL_PASSWORD
+          value: "password"
+        - name: POSTGRESQL_DATABASE
+          value: "mydb"
+        ports:
+        - containerPort: 9187
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+  test: false
+  triggers:
+  - type: ConfigChange

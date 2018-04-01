@@ -1,0 +1,9 @@
+#!/bin/sh
+
+echo "Postgresql Prometheus exporter"
+echo "POSTGRESQL_USER=${POSTGRESQL_USER}"
+echo "POSTGRESQL_DATABASE=${POSTGRESQL_DATABASE}"
+
+export DATA_SOURCE_NAME="postgresql://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@localhost:5432/${POSTGRESQL_DATABASE}?sslmode=disable"
+
+exec /postgres_exporter
